@@ -20,15 +20,10 @@ export default function AdminDashboard() {
       try {
         console.log("Fetching data...");
 
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 5000); // 5 sec timeout
-
         const [statsRes, inquiriesRes] = await Promise.all([
-          fetch('/api/admin/stats', { signal: controller.signal }),
-          fetch('/api/inquiries', { signal: controller.signal }),
+          fetch('/api/admin/stats'),
+          fetch('/api/inquiries'),
         ]);
-
-        clearTimeout(timeout);
 
         if (!statsRes.ok || !inquiriesRes.ok) {
           throw new Error('API failed');
@@ -77,10 +72,10 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <div style={{ marginBottom: 32 }}>
-        <h1>Admin Dashboard</h1>
-        <p style={{ color: 'var(--text-dim)' }}>Business overview</p>
+    <div className="flex flex-col gap-6">
+      <div className="mb-2">
+        <h1 className="text-2xl font-bold text-on-surface">Admin Dashboard</h1>
+        <p className="text-on-surface-variant mt-1">Business overview</p>
       </div>
 
       {/* Stats */}

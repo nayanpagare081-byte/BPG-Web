@@ -20,6 +20,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  await prisma.product.delete({ where: { id } });
-  return NextResponse.json({ success: true });
+  
+  try {
+    // Delete related records that don't have Cascade delete enabled in the schema
+    await prisma.inquiryItem.deleteMany({ where: { productId: id } });
+    
+    await prisma.product.delete({ where: { id } });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("Delete product error:", err);
+    return NextResponse.json({ error: 'Failed to delete product. It may be linked to other records.' }, { status: 500 });
+  }
 }

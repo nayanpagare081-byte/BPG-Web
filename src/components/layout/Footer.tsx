@@ -1,66 +1,61 @@
 import Link from 'next/link';
-import Image from 'next/image';
-import { MapPin, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer style={{ background: 'var(--bg-dim)', borderTop: '1px solid var(--border)', paddingTop: 64, paddingBottom: 32 }}>
-      <div className="container">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 48, marginBottom: 48 }}>
-          {/* Company Info */}
-          <div>
-            <div style={{ marginBottom: 20 }}>
-              <Image src="/images/logo.png" alt="BPG Construction & Earthmoving" width={180} height={54} style={{ objectFit: 'contain', height: 50, width: 'auto' }} />
-            </div>
-            <p style={{ fontSize: 14, color: 'var(--secondary)', lineHeight: 1.7, marginBottom: 16 }}>
-              Industrial-grade earthmoving machinery and construction equipment. Trusted by contractors across India.
-            </p>
-            <div style={{ fontSize: 12, color: 'var(--secondary-dim)' }}>GSTIN: 27ABBFB9400H1ZO</div>
-          </div>
-
-          {/* Navigation */}
-          <div>
-            <h4 className="label-caps" style={{ color: 'var(--primary)', marginBottom: 16 }}>Navigation</h4>
-            {[['/', 'Home'], ['/products', 'Machinery'], ['/about', 'About Us'], ['/contact', 'Contact']].map(([href, label]) => (
-              <Link key={href} href={href} style={{ display: 'block', fontSize: 14, color: 'var(--secondary)', padding: '6px 0', transition: 'color 0.2s' }}>{label}</Link>
-            ))}
-          </div>
-
-          {/* Equipment */}
-          <div>
-            <h4 className="label-caps" style={{ color: 'var(--primary)', marginBottom: 16 }}>Equipment</h4>
-            {[['/products?category=excavators', 'Excavators'], ['/products?category=wheel-loaders', 'Wheel Loaders'], ['/products?category=bulldozers', 'Bulldozers'], ['/products?category=cranes', 'Cranes']].map(([href, label]) => (
-              <Link key={href} href={href} style={{ display: 'block', fontSize: 14, color: 'var(--secondary)', padding: '6px 0' }}>{label}</Link>
-            ))}
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="label-caps" style={{ color: 'var(--primary)', marginBottom: 16 }}>Contact</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <a href="tel:+919623941966" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: 'var(--secondary)' }}>
-                <Phone size={14} /> +91 96239 41966
-              </a>
-              <a href="mailto:Satishpagare2013@gmail.com" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, color: 'var(--secondary)' }}>
-                <Mail size={14} /> Satishpagare2013@gmail.com
-              </a>
-              <a href="https://maps.app.goo.gl/R52nTpVqJ4rhej469" target="_blank" style={{ display: 'flex', alignItems: 'start', gap: 8, fontSize: 14, color: 'var(--secondary)' }}>
-                <MapPin size={14} style={{ marginTop: 2, flexShrink: 0 }} /> Plot No-26, G, No-82/A-1, Ambad, Nashik 422010
-              </a>
-              <a href="https://wa.me/qr/CYHYIGHKGCSNO1" target="_blank" className="btn btn-sm" style={{ background: '#25D366', color: '#fff', marginTop: 4, width: 'fit-content' }}>
-                WhatsApp Us
-              </a>
-            </div>
+    <footer className="bg-white border-t border-outline-variant/40 font-body-sm text-body-sm w-full pt-16 pb-8">
+      <div className="max-w-container-max mx-auto px-md grid grid-cols-1 md:grid-cols-4 gap-10">
+        
+        {/* Column 1: Company Info */}
+        <div className="flex flex-col gap-2">
+          <img src="/images/logo.png" alt="BPG Logo" className="h-20 md:h-24 w-auto object-contain self-start mb-2" />
+          <div className="text-on-surface-variant flex flex-col gap-1 text-sm leading-relaxed">
+            <p>Plot No-26, G, No-82/A-1, Ambad,</p>
+            <p>Nashik 422010, India</p>
+            <p className="mt-2">Phone: +91 96239 41966</p>
+            <p>Email: Satishpagare2013@gmail.com</p>
+            <p className="mt-1">GSTIN:27**********1ZO</p>
           </div>
         </div>
+        
+        {/* Column 2: Explore */}
+        <div className="flex flex-col gap-3">
+          <h4 className="font-button text-sm font-semibold text-on-surface uppercase tracking-wider">Explore</h4>
+          <Link href="/products" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Shop All</Link>
+          <Link href="/products?category=new" className="text-on-surface-variant hover:text-primary transition-colors text-sm">New Arrivals</Link>
+          <Link href="/about" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Collections</Link>
+        </div>
 
-        {/* Bottom Bar */}
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-          <p style={{ fontSize: 13, color: 'var(--secondary-dim)' }}>© {new Date().getFullYear()} BPG Construction & Earthmoving Equipment. All rights reserved.</p>
-          <div style={{ display: 'flex', gap: 24 }}>
-            <Link href="#" style={{ fontSize: 13, color: 'var(--secondary-dim)' }}>Privacy Policy</Link>
-            <Link href="#" style={{ fontSize: 13, color: 'var(--secondary-dim)' }}>Terms of Service</Link>
-          </div>
+        {/* Column 3: Support */}
+        <div className="flex flex-col gap-3">
+          <h4 className="font-button text-sm font-semibold text-on-surface uppercase tracking-wider">Support</h4>
+          <a href="https://wa.me/919623941966" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors text-sm">WhatsApp Support</a>
+          <a href="https://maps.google.com/?q=Plot+No-26+Ambad+Nashik" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Find Us on Google Maps</a>
+          <Link href="#" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Privacy Policy</Link>
+          <Link href="#" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Terms of Service</Link>
+        </div>
+        
+        {/* Column 4: Newsletter */}
+        <div className="flex flex-col gap-3">
+          <h4 className="font-button text-sm font-semibold text-on-surface uppercase tracking-wider">Newsletter</h4>
+          <p className="text-on-surface-variant text-sm leading-relaxed">Subscribe for exclusive access to new collections and equipment updates.</p>
+          <form className="flex mt-1">
+            <input 
+              type="email" 
+              placeholder="Email Address" 
+              className="flex-grow bg-surface-container-low border border-outline-variant/50 border-r-0 rounded-l px-3 py-2 text-sm focus:outline-none focus:border-primary transition-colors placeholder:text-outline" 
+            />
+            <button 
+              type="submit" 
+              className="bg-primary text-on-primary px-4 py-2 rounded-r font-button text-sm hover:bg-on-surface-variant transition-colors flex items-center justify-center"
+            >
+              Subscribe
+            </button>
+          </form>
+        </div>
+        
+        {/* Copyright Row */}
+        <div className="col-span-1 md:col-span-4 mt-8 pt-6 border-t border-outline-variant/30 text-on-surface-variant text-sm">
+          <span>© 2024 BPG Construction & Earthmoving Equipment. All rights reserved.</span>
         </div>
       </div>
     </footer>

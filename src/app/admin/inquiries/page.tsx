@@ -46,16 +46,37 @@ export default function AdminInquiriesPage() {
       </div>
 
       {/* Filters */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
-        <div style={{ position: 'relative', flex: '1 1 250px' }}>
-          <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--secondary)' }} />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name or email..." style={{ paddingLeft: 36, fontSize: 13 }} />
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        {/* Search Bar */}
+        <div className="relative flex-1 min-w-[250px] max-w-md">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+          <input 
+            value={search} 
+            onChange={e => setSearch(e.target.value)} 
+            placeholder="Search inquiries by name or email..." 
+            className="w-full pl-10 pr-4 py-2 bg-surface border border-outline-variant/50 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+          />
         </div>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={() => setStatusFilter('')} className={`btn btn-sm ${!statusFilter ? 'btn-primary' : 'btn-secondary'}`}><Filter size={13} /> All ({inquiries.length})</button>
+        
+        {/* Status Filter Buttons */}
+        <div className="flex flex-wrap gap-2 items-center">
+          <button 
+            onClick={() => setStatusFilter('')} 
+            className={`px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 transition-colors ${!statusFilter ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}
+          >
+            <Filter size={14} /> All ({inquiries.length})
+          </button>
           {['PENDING', 'CONTACTED', 'QUOTED', 'CLOSED'].map(s => {
             const count = inquiries.filter(i => i.status === s).length;
-            return <button key={s} onClick={() => setStatusFilter(s)} className={`btn btn-sm ${statusFilter === s ? 'btn-primary' : 'btn-secondary'}`}>{getStatusLabel(s)} ({count})</button>;
+            return (
+              <button 
+                key={s} 
+                onClick={() => setStatusFilter(s)} 
+                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${statusFilter === s ? 'bg-primary text-white shadow-md shadow-primary/20' : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'}`}
+              >
+                {getStatusLabel(s)} ({count})
+              </button>
+            );
           })}
         </div>
       </div>

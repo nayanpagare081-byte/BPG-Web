@@ -1,5 +1,5 @@
 'use client';
-import { useSession } from 'next-auth/react';
+import { useSession } from '@/hooks/useSession';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { User, Mail, Phone, Shield } from 'lucide-react';

@@ -1,122 +1,47 @@
-import { NextAuthOptions } from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
-import bcrypt from 'bcryptjs';
+import { createClient } from '@/utils/supabase/server';
 import prisma from './prisma';
 
-export const authOptions: NextAuthOptions = {
-  providers: [
-    CredentialsProvider({
-      name: 'credentials',
-      credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
+export async function getServerSession() {
+  const supabase = await createClient();
+  const { data: { session }, error } = await supabase.auth.getSession();
+
+  if (error || !session?.user) {
+    return null;
+  }
+
+  const supabaseUser = session.user;
+
+  // Sync with Prisma
+  let user = await prisma.user.findUnique({
+    where: { email: supabaseUser.email! },
+  });
+
+  if (!user) {
+    // If user doesn't exist in Prisma, create them
+    user = await prisma.user.create({
+      data: {
+        id: supabaseUser.id,
+        email: supabaseUser.email!,
+        name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User',
+        role: 'CUSTOMER',
       },
+    });
+  } else if (user.id !== supabaseUser.id) {
+    // If the user exists but with a different ID (e.g. they were created locally before Supabase)
+    // For local dev, we might just use their Prisma ID. But best to update the Prisma ID if possible, 
+    // though SQLite doesn't allow changing Primary Keys easily if referenced.
+    // We'll just return the Prisma user, but the ID will be the Prisma CUID.
+  }
 
-      async authorize(credentials) {
-        try {
-          console.log("LOGIN ATTEMPT:", credentials?.email);
+  const isAdmin = user.email === 'nayanpagare081@gmail.com' || user.email === 'admin@bpg.com';
 
-          if (!credentials?.email || !credentials?.password) {
-            throw new Error('Missing email or password');
-          }
-
-          const user = await prisma.user.findUnique({
-            where: { email: credentials.email },
-          });
-
-          if (!user || !user.password) {
-            throw new Error('User not found');
-          }
-
-          const isValid = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
-
-          if (!isValid) {
-            throw new Error('Invalid password');
-          }
-
-          return {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            image: user.image,
-          };
-        } catch (err) {
-          console.error("AUTH ERROR:", err);
-          return null; // 🔥 IMPORTANT: prevents hanging
-        }
-      },
-    }),
-
-    // ✅ Only enable Google if keys exist
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-      ? [
-          GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          }),
-        ]
-      : []),
-  ],
-
-  callbacks: {
-    async jwt({ token, user, account }) {
-      try {
-        if (user) {
-          token.role = (user as { role?: string }).role || 'CUSTOMER';
-          token.id = user.id;
-        }
-
-        if (account?.provider === 'google') {
-          const existingUser = await prisma.user.findUnique({
-            where: { email: token.email! },
-          });
-
-          if (!existingUser) {
-            const newUser = await prisma.user.create({
-              data: {
-                name: token.name!,
-                email: token.email!,
-                image: token.picture,
-                role: 'CUSTOMER',
-              },
-            });
-
-            token.id = newUser.id;
-            token.role = newUser.role;
-          } else {
-            token.id = existingUser.id;
-            token.role = existingUser.role;
-          }
-        }
-
-        return token;
-      } catch (err) {
-        console.error("JWT ERROR:", err);
-        return token;
-      }
-    },
-
-    async session({ session, token }) {
-      if (session.user) {
-        (session.user as { id?: string; role?: unknown }).id = token.id as string;
-        (session.user as { role?: unknown }).role = token.role;
-      }
-      return session;
-    },
-  },
-
-  pages: {
-    signIn: '/login',
-  },
-
-  session: {
-    strategy: 'jwt',
-  },
-
-  secret: process.env.NEXTAUTH_SECRET,
-};
+  return {
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: isAdmin ? 'ADMIN' : user.role,
+      image: user.image,
+    }
+  };
+}

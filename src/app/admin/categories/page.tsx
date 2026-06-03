@@ -99,13 +99,24 @@ export default function AdminCategoriesPage() {
       return showError(`Cannot delete "${name}" — it has ${productCount} product(s). Move them to another category first.`);
     }
     if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
-    const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' });
-    if (res.ok) {
-      setCategories(categories.filter(c => c.id !== id));
-      showMessage('🗑️ Category deleted');
-    } else {
-      const err = await res.json();
-      showError(err.error || 'Failed to delete category');
+    
+    try {
+      const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setCategories(categories.filter(c => c.id !== id));
+        showMessage('🗑️ Category deleted');
+      } else {
+        let errorMsg = 'Failed to delete category';
+        try {
+          const err = await res.json();
+          errorMsg = err.error || errorMsg;
+        } catch {
+          // Ignore json parsing errors on empty bodies
+        }
+        showError(errorMsg);
+      }
+    } catch (e) {
+      showError('Network error while deleting category');
     }
   };
 
@@ -126,12 +137,17 @@ export default function AdminCategoriesPage() {
             {categories.length} categories · {totalProducts} total products
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <div style={{ position: 'relative' }}>
-            <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--secondary)' }} />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search categories..." style={{ paddingLeft: 36, width: 220, fontSize: 13 }} />
+        <div className="flex items-center gap-3">
+          <div className="relative flex items-center">
+            <Search size={16} className="absolute left-3 text-outline" />
+            <input 
+              value={search} 
+              onChange={e => setSearch(e.target.value)} 
+              placeholder="Search categories..." 
+              className="w-[220px] pl-10 pr-4 py-2.5 bg-surface border border-outline-variant/50 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            />
           </div>
-          <button onClick={() => setIsAdding(!isAdding)} className="btn btn-primary">
+          <button onClick={() => setIsAdding(!isAdding)} className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors whitespace-nowrap">
             {isAdding ? <X size={16} /> : <Plus size={16} />} {isAdding ? 'Cancel' : 'Add Category'}
           </button>
         </div>
@@ -147,37 +163,43 @@ export default function AdminCategoriesPage() {
       )}
 
       {isAdding && (
-        <div className="card" style={{ padding: 24, marginBottom: 24, border: '1px solid var(--primary)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--primary)' }}>✨ Add New Category</h3>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={saveNewCategory} className="btn btn-primary btn-sm" disabled={saving}>
-                <Save size={14} /> {saving ? 'Saving...' : 'Save Category'}
+        <div className="bg-surface border border-outline-variant/30 rounded-xl p-6 mb-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4 border-b border-outline-variant/20 pb-4">
+            <h3 className="text-lg font-bold text-primary flex items-center gap-2">
+              <span className="text-xl">✨</span> Add New Category
+            </h3>
+            <div className="flex gap-3">
+              <button onClick={saveNewCategory} className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors" disabled={saving}>
+                <Save size={16} /> {saving ? 'Saving...' : 'Save Category'}
               </button>
-              <button onClick={() => { setIsAdding(false); setAddForm({ name: '', description: '' }); }} className="btn btn-secondary btn-sm"><X size={14} /> Cancel</button>
+              <button onClick={() => { setIsAdding(false); setAddForm({ name: '', description: '' }); }} className="flex items-center gap-2 px-4 py-2 bg-surface-container-high text-on-surface rounded-lg text-sm font-semibold hover:bg-surface-container-highest transition-colors">
+                <X size={16} /> Cancel
+              </button>
             </div>
           </div>
-          <div className="grid grid-2" style={{ gap: 16 }}>
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Category Name *</label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-on-surface">Category Name <span className="text-error">*</span></label>
               <input
                 value={addForm.name}
                 onChange={e => setAddForm({ ...addForm, name: e.target.value })}
                 placeholder="e.g. Excavators, Wheel Loaders"
+                className="w-full px-4 py-2.5 bg-surface border border-outline-variant/50 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                 autoFocus
               />
               {addForm.name && (
-                <div style={{ fontSize: 11, color: 'var(--secondary-dim)', marginTop: 4 }}>
+                <div className="text-xs text-on-surface-variant mt-1">
                   Slug: {addForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}
                 </div>
               )}
             </div>
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Description</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-on-surface">Description</label>
               <input
                 value={addForm.description}
                 onChange={e => setAddForm({ ...addForm, description: e.target.value })}
                 placeholder="Brief description of this category"
+                className="w-full px-4 py-2.5 bg-surface border border-outline-variant/50 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               />
             </div>
           </div>
@@ -189,36 +211,42 @@ export default function AdminCategoriesPage() {
           <div key={cat.id} className="card" style={{ padding: 0, overflow: 'visible' }}>
             {editingId === cat.id ? (
               /* ── EDIT MODE ── */
-              <div style={{ padding: 24 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--primary)' }}>✏️ Editing: {cat.name}</h3>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => saveEdit(cat.id)} className="btn btn-primary btn-sm" disabled={saving}>
-                      <Save size={14} /> {saving ? 'Saving...' : 'Save'}
+              <div className="p-6">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4 border-b border-outline-variant/20 pb-4">
+                  <h3 className="text-lg font-bold text-primary flex items-center gap-2">
+                    <span className="text-xl">✏️</span> Editing: {cat.name}
+                  </h3>
+                  <div className="flex gap-3">
+                    <button onClick={() => saveEdit(cat.id)} className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors" disabled={saving}>
+                      <Save size={16} /> {saving ? 'Saving...' : 'Save'}
                     </button>
-                    <button onClick={cancelEdit} className="btn btn-secondary btn-sm"><X size={14} /> Cancel</button>
+                    <button onClick={cancelEdit} className="flex items-center gap-2 px-4 py-2 bg-surface-container-high text-on-surface rounded-lg text-sm font-semibold hover:bg-surface-container-highest transition-colors">
+                      <X size={16} /> Cancel
+                    </button>
                   </div>
                 </div>
-                <div className="grid grid-2" style={{ gap: 16 }}>
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Category Name</label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-semibold text-on-surface">Category Name</label>
                     <input
                       value={editForm.name}
                       onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-surface border border-outline-variant/50 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                       autoFocus
                     />
                     {editForm.name && editForm.name !== cat.name && (
-                      <div style={{ fontSize: 11, color: 'var(--secondary-dim)', marginTop: 4 }}>
+                      <div className="text-xs text-on-surface-variant mt-1">
                         New slug: {editForm.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}
                       </div>
                     )}
                   </div>
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label">Description</label>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-semibold text-on-surface">Description</label>
                     <input
                       value={editForm.description}
                       onChange={e => setEditForm({ ...editForm, description: e.target.value })}
                       placeholder="Brief description"
+                      className="w-full px-4 py-2.5 bg-surface border border-outline-variant/50 rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                     />
                   </div>
                 </div>

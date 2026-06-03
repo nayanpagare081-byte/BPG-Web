@@ -1,97 +1,234 @@
 'use client';
-import { useState } from 'react';
-import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
 
 export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex-grow flex items-center justify-center py-xl min-h-[50vh]">
+          <span className="material-symbols-outlined text-[48px] text-outline-variant animate-spin">progress_activity</span>
+        </div>
+      }
+    >
+      <LoginContent />
+    </Suspense>
+  );
+}
+
+function LoginContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const supabase = createClient();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        router.push(callbackUrl);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        router.push(callbackUrl);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [router, callbackUrl, supabase]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true); setError('');
-    const res = await signIn('credentials', { email, password, redirect: false });
-    setLoading(false);
-    if (res?.error) setError('Invalid email or password');
-    else router.push('/');
+    setLoading(true);
+    setError('');
+    
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        setError(error.message);
+      } else {
+        router.push(callbackUrl);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleGoogleSignIn = () => {
-    signIn('google', { callbackUrl: '/' });
+  const handleGoogleSignIn = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}${callbackUrl}`,
+        queryParams: {
+          prompt: 'select_account'
+        }
+      }
+    });
   };
 
   return (
-    <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px' }}>
-      <div style={{ width: '100%', maxWidth: 440 }}>
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <Image src="/images/logo.png" alt="BPG Construction & Earthmoving" width={200} height={60} style={{ objectFit: 'contain', height: 56, width: 'auto', margin: '0 auto 20px' }} />
-          <h1 className="h2">Welcome Back</h1>
-          <p style={{ color: 'var(--secondary)', marginTop: 8 }}>Sign in to your BPG account</p>
+    <div className="relative flex-grow flex items-center justify-center py-lg px-margin-mobile overflow-hidden min-h-[calc(100vh-80px)]">
+      {/* Background Image with Dark Glassy Overlay */}
+      <div className="absolute inset-0 z-0">
+        <img
+          alt="BPG Construction Machinery & Earthmoving Equipment"
+          className="w-full h-full object-cover transform scale-105"
+          src="/images/hero-bg.png"
+        />
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
+      </div>
+
+      {/* Login Card Panel */}
+      <div className="relative z-10 w-full max-w-[440px] p-md md:p-lg flex flex-col gap-md text-white">
+        {/* Header Section */}
+        <div className="flex flex-col items-center text-center gap-xs">
+          <img src="/images/logo.png" alt="BPG Logo" className="h-28 md:h-32 w-auto object-contain mb-sm" />
+          <h2 className="font-label-md text-label-md text-slate-300 font-bold uppercase tracking-widest">
+            Sign In to Your Account
+          </h2>
+          <p className="font-body-sm text-body-sm text-slate-400">
+            Access your custom inquiries and saved equipment
+          </p>
         </div>
 
-        <div className="card" style={{ padding: 32 }}>
-          {/* Google Sign In Button */}
+        {/* Authentication Actions */}
+        <div className="flex flex-col gap-md mt-sm">
+          {/* Google Sign In */}
           <button
             onClick={handleGoogleSignIn}
-            style={{
-              width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-              padding: '12px 24px', borderRadius: 'var(--radius)', fontSize: 14, fontWeight: 600,
-              background: '#fff', color: '#1f1f1f', border: '1px solid #dadce0',
-              cursor: 'pointer', transition: 'all 0.2s', marginBottom: 24,
-            }}
-            onMouseEnter={e => { (e.target as HTMLElement).style.background = '#f7f8f8'; (e.target as HTMLElement).style.boxShadow = '0 1px 3px rgba(0,0,0,0.15)'; }}
-            onMouseLeave={e => { (e.target as HTMLElement).style.background = '#fff'; (e.target as HTMLElement).style.boxShadow = 'none'; }}
+            className="w-full flex items-center justify-center gap-sm px-md py-[12px] bg-white/10 border border-white/20 rounded hover:bg-white/20 transition-all duration-200 cursor-pointer active:scale-98 font-button text-button text-white"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
             </svg>
-            Continue with Google
+            <span>Sign in with Google</span>
           </button>
 
-          {/* Divider */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-            <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
-            <span style={{ fontSize: 12, color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>or</span>
-            <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          {/* Separator */}
+          <div className="flex items-center gap-sm">
+            <div className="flex-grow h-px bg-white/20"></div>
+            <span className="font-label-sm text-label-sm text-slate-400 uppercase tracking-widest">
+              Or sign in with email
+            </span>
+            <div className="flex-grow h-px bg-white/20"></div>
           </div>
 
-          <form onSubmit={handleSubmit}>
-            {error && <div style={{ background: 'rgba(255,180,171,0.1)', border: '1px solid var(--error)', borderRadius: 'var(--radius)', padding: 12, marginBottom: 20, fontSize: 14, color: 'var(--error)' }}>{error}</div>}
+          {/* Email / Password Form */}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-sm">
+            {error && (
+              <div className="bg-red-500/15 border border-red-500/40 text-red-300 p-sm text-body-sm rounded">
+                {error}
+              </div>
+            )}
 
-            <div className="form-group">
-              <label className="form-label">Email Address</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" required />
+            {/* Email Input */}
+            <div className="flex flex-col gap-xs">
+              <label className="font-label-md text-label-md text-slate-300 font-bold" htmlFor="email">
+                Email Address
+              </label>
+              <input
+                id="email"
+                required
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@company.com"
+                className="w-full px-sm py-[10px] bg-white/10 border border-white/20 rounded font-body-md text-body-md text-white focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-all placeholder:text-white/40"
+              />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Password</label>
-              <div style={{ position: 'relative' }}>
-                <input type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter password" required />
-                <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--secondary)', cursor: 'pointer' }}>
-                  {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+            {/* Password Input */}
+            <div className="flex flex-col gap-xs">
+              <div className="flex justify-between items-center">
+                <label className="font-label-md text-label-md text-slate-300 font-bold" htmlFor="password">
+                  Password
+                </label>
+                <Link
+                  href="/forgot-password"
+                  className="font-label-md text-label-md text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <input
+                  id="password"
+                  required
+                  type={showPw ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-sm py-[10px] bg-white/10 border border-white/20 rounded font-body-md text-body-md text-white focus:outline-none focus:ring-1 focus:ring-white focus:border-white transition-all placeholder:text-white/45"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw(!showPw)}
+                  className="absolute right-sm top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors flex items-center justify-center cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[20px]">
+                    {showPw ? 'visibility_off' : 'visibility'}
+                  </span>
                 </button>
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: 8 }} disabled={loading}>
-              {loading ? <span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} /> : <><LogIn size={18} /> Sign In</>}
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-white text-black hover:bg-slate-200 font-button text-button py-[14px] px-md rounded mt-sm transition-all duration-200 cursor-pointer active:scale-98 flex items-center justify-center gap-xs font-bold"
+            >
+              {loading ? (
+                <span className="material-symbols-outlined text-[18px] animate-spin text-black">progress_activity</span>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-[18px]">login</span>
+                  <span>Sign In</span>
+                </>
+              )}
             </button>
           </form>
         </div>
 
-        <p style={{ textAlign: 'center', marginTop: 24, fontSize: 14, color: 'var(--secondary)' }}>
-          Don&apos;t have an account? <Link href="/signup" style={{ color: 'var(--primary)' }}>Create one</Link>
-        </p>
+        {/* Sign Up Link */}
+        <div className="text-center mt-xs pt-md border-t border-white/10">
+          <p className="font-body-sm text-body-sm text-slate-300">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="text-blue-400 hover:text-blue-300 font-bold transition-colors">
+              Sign up
+            </Link>
+          </p>
+          <p className="mt-md font-body-sm text-body-sm text-slate-400/80 leading-relaxed">
+            By continuing, you agree to our{' '}
+            <a className="underline hover:text-white transition-colors" href="#">
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a className="underline hover:text-white transition-colors" href="#">
+              Privacy Policy
+            </a>
+            .
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -64,15 +64,37 @@ export default function AdminAnalyticsPage() {
 
       <div className="card" style={{ padding: 24 }}>
         <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Summary Report</h3>
-        <div className="table-container">
-          <table>
-            <thead><tr><th>Metric</th><th>Value</th></tr></thead>
-            <tbody>
-              <tr><td>Total Products in Catalogue</td><td style={{ fontWeight: 600 }}>{stats.totalProducts}</td></tr>
-              <tr><td>Total Inquiries Received</td><td style={{ fontWeight: 600 }}>{stats.totalInquiries}</td></tr>
-              <tr><td>Registered Customers</td><td style={{ fontWeight: 600 }}>{stats.totalCustomers}</td></tr>
-              <tr><td>Pending Inquiries</td><td style={{ fontWeight: 600, color: 'var(--warning)' }}>{stats.pendingInquiries}</td></tr>
-              <tr><td>Conversion Rate</td><td style={{ fontWeight: 600 }}>{stats.totalInquiries ? Math.round(((stats.statusDistribution.find(s => s.status === 'CLOSED')?.count || 0) / stats.totalInquiries) * 100) : 0}%</td></tr>
+        <div className="overflow-x-auto border border-outline-variant/30 rounded-xl bg-white shadow-sm">
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-surface-container-low text-on-surface-variant text-xs uppercase tracking-wider border-b border-outline-variant/30">
+              <tr>
+                <th className="px-6 py-4 font-bold">Metric</th>
+                <th className="px-6 py-4 font-bold text-right">Value</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant/30">
+              <tr className="hover:bg-surface-container-lowest transition-colors">
+                <td className="px-6 py-4 text-on-surface">Total Products in Catalogue</td>
+                <td className="px-6 py-4 font-bold text-primary text-right">{stats.totalProducts}</td>
+              </tr>
+              <tr className="hover:bg-surface-container-lowest transition-colors">
+                <td className="px-6 py-4 text-on-surface">Total Inquiries Received</td>
+                <td className="px-6 py-4 font-bold text-primary text-right">{stats.totalInquiries}</td>
+              </tr>
+              <tr className="hover:bg-surface-container-lowest transition-colors">
+                <td className="px-6 py-4 text-on-surface">Registered Customers</td>
+                <td className="px-6 py-4 font-bold text-primary text-right">{stats.totalCustomers}</td>
+              </tr>
+              <tr className="hover:bg-surface-container-lowest transition-colors">
+                <td className="px-6 py-4 text-on-surface">Pending Inquiries</td>
+                <td className="px-6 py-4 font-bold text-orange-500 text-right">{stats.pendingInquiries}</td>
+              </tr>
+              <tr className="hover:bg-surface-container-lowest transition-colors bg-surface-container-low/30">
+                <td className="px-6 py-4 text-on-surface font-semibold">Conversion Rate</td>
+                <td className="px-6 py-4 font-bold text-green-600 text-right">
+                  {stats.totalInquiries ? Math.round(((stats.statusDistribution.find(s => s.status === 'CLOSED')?.count || 0) / stats.totalInquiries) * 100) : 0}%
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

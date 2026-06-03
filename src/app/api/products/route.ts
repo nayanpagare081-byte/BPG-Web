@@ -6,6 +6,7 @@ export async function GET(req: NextRequest) {
   const category = searchParams.get('category');
   const search = searchParams.get('search');
   const featured = searchParams.get('featured');
+  const sort = searchParams.get('sort');
   const page = parseInt(searchParams.get('page') || '1');
   const limit = parseInt(searchParams.get('limit') || '12');
 
@@ -17,10 +18,16 @@ export async function GET(req: NextRequest) {
     { description: { contains: search } },
   ];
 
+  let orderBy: any = { createdAt: 'desc' };
+  if (sort === 'price_low') orderBy = { price: 'asc' };
+  else if (sort === 'price_high') orderBy = { price: 'desc' };
+  else if (sort === 'newest') orderBy = { createdAt: 'desc' };
+  else if (sort === 'featured') orderBy = [{ featured: 'desc' }, { createdAt: 'desc' }];
+
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where, include: { category: true, _count: { select: { reviews: true } } },
-      skip: (page - 1) * limit, take: limit, orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * limit, take: limit, orderBy,
     }),
     prisma.product.count({ where }),
   ]);
