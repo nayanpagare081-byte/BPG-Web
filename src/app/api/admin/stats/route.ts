@@ -15,10 +15,10 @@ export async function GET() {
   ]);
 
   const statusDist = await prisma.inquiry.groupBy({ by: ['status'], _count: true });
-  const statusDistribution = statusDist.map(s => ({ status: s.status, count: s._count }));
+  const statusDistribution = statusDist.map((s: any) => ({ status: s.status, count: s._count }));
 
   const categories = await prisma.category.findMany({ include: { _count: { select: { products: true } } } });
-  const categoryDistribution = categories.map(c => ({ name: c.name, count: c._count?.products || 0 }));
+  const categoryDistribution = categories.map((c: any) => ({ name: c.name, count: c._count?.products || 0 }));
 
   // Fetch recent inquiries for time-series chart (last 30 days)
   const thirtyDaysAgo = new Date();
@@ -40,12 +40,12 @@ export async function GET() {
     salesDataMap.set(dateStr, { date: dateStr, inquiries: 0, value: 0 });
   }
 
-  recentInquiries.forEach(inq => {
+  recentInquiries.forEach((inq: any) => {
     const dateStr = inq.createdAt.toISOString().split('T')[0];
     if (salesDataMap.has(dateStr)) {
       const current = salesDataMap.get(dateStr)!;
       current.inquiries += 1;
-      const val = inq.items.reduce((s, item) => s + (item.product.price || 0) * item.quantity, 0);
+      const val = inq.items.reduce((s: number, item: any) => s + (item.product.price || 0) * item.quantity, 0);
       current.value += val;
     }
   });
