@@ -7,7 +7,11 @@ export default async function HomePage() {
   const categories = await prisma.category.findMany({
     include: { 
       _count: { select: { products: true } },
-      products: { take: 1, select: { images: true, slug: true } }
+      products: { 
+        take: 1, 
+        orderBy: { createdAt: 'desc' },
+        select: { images: true, slug: true } 
+      }
     },
   });
   const featured = await prisma.product.findMany({
@@ -102,7 +106,7 @@ export default async function HomePage() {
               <img
                 alt={bentoCategories[0]?.name || 'Equipment'}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                src={getCategoryImage(bentoCategories[0], "/images/mixer.png")}
+                src={getCategoryImage(bentoCategories[0], "/images/products/excavator-1.jpg")}
               />
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent" />
@@ -124,7 +128,7 @@ export default async function HomePage() {
             <img
               alt={bentoCategories[1]?.name || 'Equipment'}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              src={getCategoryImage(bentoCategories[1], "/images/mixer-2.jpeg")}
+              src={getCategoryImage(bentoCategories[1], "/images/products/dump-truck-1.jpg")}
             />
             <div className="absolute inset-0 bg-black/20" />
             <div className="absolute top-0 left-0 p-md w-full h-full flex flex-col justify-end">
@@ -168,7 +172,7 @@ export default async function HomePage() {
             <img
               alt={bentoCategories[2]?.name || 'Equipment'}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              src={getCategoryImage(bentoCategories[2], "/images/mixer-3.jpeg")}
+              src={getCategoryImage(bentoCategories[2], "/images/products/loader-1.jpg")}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-primary/70 via-transparent to-transparent" />
             <div className="absolute bottom-0 left-0 p-md w-full">
