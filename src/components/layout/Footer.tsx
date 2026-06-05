@@ -20,18 +20,19 @@ export default function Footer() {
         {/* Column 2: Explore */}
         <div className="flex flex-col gap-3">
           <h4 className="font-button text-sm font-semibold text-on-surface uppercase tracking-wider">Explore</h4>
+          <Link href="/" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Home</Link>
           <Link href="/products" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Shop All</Link>
-          <Link href="/products?category=new" className="text-on-surface-variant hover:text-primary transition-colors text-sm">New Arrivals</Link>
-          <Link href="/about" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Collections</Link>
+          <Link href="/consultation" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Request Consultation</Link>
+          <Link href="/about" className="text-on-surface-variant hover:text-primary transition-colors text-sm">About me</Link>
         </div>
 
         {/* Column 3: Support */}
         <div className="flex flex-col gap-3">
           <h4 className="font-button text-sm font-semibold text-on-surface uppercase tracking-wider">Support</h4>
-          <a href="https://wa.me/919623941966" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors text-sm">WhatsApp Support</a>
-          <a href="https://maps.google.com/?q=Plot+No-26+Ambad+Nashik" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Find Us on Google Maps</a>
           <Link href="/privacy" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Privacy Policy</Link>
           <Link href="/terms" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Terms of Service</Link>
+          <a href="https://wa.me/919623941966" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors text-sm">WhatsApp Support</a>
+          <a href="https://maps.google.com/?q=Plot+No-26+Ambad+Nashik" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Find Us on Google Maps</a>
         </div>
         
         {/* Column 4: Newsletter */}
