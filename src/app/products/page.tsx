@@ -61,7 +61,7 @@ function ProductsContent() {
   return (
     <main className="flex-grow max-w-container-max mx-auto w-full px-margin-mobile md:px-md py-lg flex flex-col md:flex-row gap-lg">
       {/* ── Sidebar Filters (Desktop) ── */}
-      <aside className="hidden md:flex flex-col w-64 shrink-0 gap-lg">
+      <aside className="hidden md:flex flex-col w-64 shrink-0 gap-lg sticky top-32 self-start">
         {/* Category Filter */}
         <div className="filter-group">
           <button
