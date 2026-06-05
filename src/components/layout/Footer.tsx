@@ -20,7 +20,7 @@ export default function Footer() {
         {/* Column 2: Explore */}
         <div className="flex flex-col gap-3">
           <h4 className="font-button text-sm font-semibold text-on-surface uppercase tracking-wider">Explore</h4>
-          <Link href="/" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Home</Link>
+          <Link href="/" onClick={(e) => { if (window.location.pathname === '/') { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); } }} className="text-on-surface-variant hover:text-primary transition-colors text-sm">Home</Link>
           <Link href="/products" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Shop All</Link>
           <Link href="/consultation" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Request Consultation</Link>
           <Link href="/about" className="text-on-surface-variant hover:text-primary transition-colors text-sm">About me</Link>
