@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function TermsOfServicePage() {
   return (
-    <div className="bg-surface min-h-screen py-16 px-4 sm:px-6 lg:px-8 mt-[104px]">
+    <div className="bg-surface min-h-screen py-8 px-4 sm:px-6 lg:px-8 mt-24">
       <div className="max-w-3xl mx-auto glass-panel p-8 md:p-12 rounded-2xl">
         <h1 className="text-4xl font-display-lg text-primary mb-8">Terms of Service</h1>
         
