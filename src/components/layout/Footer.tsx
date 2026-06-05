@@ -30,8 +30,8 @@ export default function Footer() {
           <h4 className="font-button text-sm font-semibold text-on-surface uppercase tracking-wider">Support</h4>
           <a href="https://wa.me/919623941966" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors text-sm">WhatsApp Support</a>
           <a href="https://maps.google.com/?q=Plot+No-26+Ambad+Nashik" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Find Us on Google Maps</a>
-          <Link href="#" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Privacy Policy</Link>
-          <Link href="#" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Terms of Service</Link>
+          <Link href="/privacy" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Privacy Policy</Link>
+          <Link href="/terms" className="text-on-surface-variant hover:text-primary transition-colors text-sm">Terms of Service</Link>
         </div>
         
         {/* Column 4: Newsletter */}
