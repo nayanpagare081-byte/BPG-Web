@@ -27,14 +27,20 @@ export default async function HomePage() {
 
   const getCategoryImage = (cat: any, fallback: string) => {
     if (!cat) return fallback;
-    // @ts-ignore - in case image doesn't exist on schema but does in DB
-    if (cat.image) return cat.image;
+    
+    // First, try to use the most recently added product's image
     if (cat.products && cat.products.length > 0 && cat.products[0].images) {
       try {
         const parsed = JSON.parse(cat.products[0].images);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed[0];
       } catch (e) {}
     }
+    
+    // Second, use the category's dedicated image if it has one
+    // @ts-ignore
+    if (cat.image) return cat.image;
+    
+    // Finally, use the fallback
     return fallback;
   };
 
