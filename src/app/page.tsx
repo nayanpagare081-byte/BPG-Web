@@ -62,7 +62,7 @@ export default async function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-surface/80 to-transparent" />
         </div>
         <div className="relative z-10 max-w-container-max w-full mx-auto px-md md:px-lg grid grid-cols-1 md:grid-cols-2 gap-lg">
-          <div className="glass-panel p-lg rounded-xl flex flex-col items-start shadow-[0px_10px_30px_rgba(0,0,0,0.04)] hero-text-anim max-w-[576px] gap-lg">
+          <div className="glass-panel p-md md:p-lg rounded-xl flex flex-col items-start shadow-[0px_10px_30px_rgba(0,0,0,0.04)] hero-text-anim max-w-[576px] gap-md md:gap-lg">
             <span className="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">
               ───── BPG industrial solutions
             </span>
@@ -74,16 +74,16 @@ export default async function HomePage() {
             <p className="font-body-lg text-body-lg text-on-surface-variant">
               Forged for India&apos;s most demanding construction environments. BPG delivers Mixers, Portable Cranes, Industrial Lifts, and heavy machinery built to dominate every jobsite.
             </p>
-            <div className="flex flex-row items-center gap-4 mt-sm w-full max-w-[500px]">
+            <div className="flex flex-col sm:flex-row items-center gap-4 mt-sm w-full max-w-[500px]">
               <Link
                 href="/products"
-                className="btn-ripple bg-primary text-on-primary font-button text-button flex-1 h-12 rounded hover:bg-on-surface-variant transition-colors shadow-[0px_4px_14px_rgba(0,0,0,0.1)] inline-flex items-center justify-center text-center whitespace-nowrap px-2"
+                className="btn-ripple bg-primary text-on-primary font-button text-button w-full sm:flex-1 h-12 rounded hover:bg-on-surface-variant transition-colors shadow-[0px_4px_14px_rgba(0,0,0,0.1)] inline-flex items-center justify-center text-center px-4"
               >
                 Explore Machinery
               </Link>
               <Link
                 href="/consultation"
-                className="btn-ripple bg-white text-black font-button text-button flex-1 h-12 rounded hover:bg-slate-100 transition-colors shadow-[0px_4px_14px_rgba(0,0,0,0.1)] inline-flex items-center justify-center text-center whitespace-nowrap px-2"
+                className="btn-ripple bg-white text-black font-button text-button w-full sm:flex-1 h-12 rounded hover:bg-slate-100 transition-colors shadow-[0px_4px_14px_rgba(0,0,0,0.1)] inline-flex items-center justify-center text-center px-4"
               >
                 Request Consultation
               </Link>
