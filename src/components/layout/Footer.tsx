@@ -22,9 +22,9 @@ export default function Footer() {
         </div>
 
         {/* Column 2: Explore */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 items-start">
           <h4 className="font-button text-sm font-semibold text-on-surface uppercase tracking-wider">
-            Explore
+            {'Explore'}
           </h4>
           <Link
             href="/"
@@ -36,60 +36,35 @@ export default function Footer() {
             }}
             className="text-on-surface-variant hover:text-primary transition-colors text-sm"
           >
-            Home
+            {'Home'}
           </Link>
-          <Link
-            href="/products"
-            className="text-on-surface-variant hover:text-primary transition-colors text-sm"
-          >
-            Shop All
+          <Link href="/products" className="text-on-surface-variant hover:text-primary transition-colors text-sm">
+            {'Shop All'}
           </Link>
-          <Link
-            href="/consultation"
-            className="text-on-surface-variant hover:text-primary transition-colors text-sm"
-          >
-            Request Consultation
+          <Link href="/consultation" className="text-on-surface-variant hover:text-primary transition-colors text-sm">
+            {'Request Consultation'}
           </Link>
-          <Link
-            href="/about"
-            className="text-on-surface-variant hover:text-primary transition-colors text-sm"
-          >
-            About me
+          <Link href="/about" className="text-on-surface-variant hover:text-primary transition-colors text-sm">
+            {'About me'}
           </Link>
         </div>
 
         {/* Column 3: Support */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 items-start">
           <h4 className="font-button text-sm font-semibold text-on-surface uppercase tracking-wider">
-            Support
+            {'Support'}
           </h4>
-          <Link
-            href="/privacy"
-            className="text-on-surface-variant hover:text-primary transition-colors text-sm"
-          >
-            Privacy Policy
+          <Link href="/privacy" className="text-on-surface-variant hover:text-primary transition-colors text-sm">
+            {'Privacy Policy'}
           </Link>
-          <Link
-            href="/terms"
-            className="text-on-surface-variant hover:text-primary transition-colors text-sm"
-          >
-            Terms of Service
+          <Link href="/terms" className="text-on-surface-variant hover:text-primary transition-colors text-sm">
+            {'Terms of Service'}
           </Link>
-          <a
-            href="https://wa.me/919623941966"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-on-surface-variant hover:text-primary transition-colors text-sm"
-          >
-            WhatsApp Support
+          <a href="https://wa.me/919623941966" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors text-sm">
+            {'WhatsApp Support'}
           </a>
-          <a
-            href="https://maps.google.com/?q=Plot+No-26+Ambad+Nashik"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-on-surface-variant hover:text-primary transition-colors text-sm"
-          >
-            Find Us on Google Maps
+          <a href="https://maps.google.com/?q=Plot+No-26+Ambad+Nashik" target="_blank" rel="noopener noreferrer" className="text-on-surface-variant hover:text-primary transition-colors text-sm">
+            {'Find Us on Google Maps'}
           </a>
         </div>
 
